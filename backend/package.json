@@ -11,12 +11,18 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@chapa_et/inline.js": "^1.0.1",
+    "@telebirrh5/core": "^0.1.2",
     "axios": "^1.7.9",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.9.5",
+    "mysql2": "^3.12.0",
+    "node-rsa": "^1.1.1",
     "process": "^0.11.10",
     "request": "^2.88.2",
     "uuidv4": "^6.2.13"

@@ -1,9 +1,14 @@
-import connectDb from './db/db.config.js';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import db from './db/db.js'; 
+import initRoutes from './route/initRoutes.js'; 
 import process from 'process';
-import router from './route/chapa.route.js';
+import paymentRoutes from './route/paymentRoute.js';
+
+
+dotenv.config();
 
 const app = express();
 
@@ -19,19 +24,27 @@ app.use(cors({
 app.options('*', cors());
 
 // Connect to the database
-connectDb();
+(async () => {
+    try {
+        await db.pool.getConnection();
+        console.log('Connected to the database successfully.');
+    } catch (error) {
+        console.error('Failed to connect to the database:', error.message);
+        process.exit(1);
+    }
+})();
 
 
-// Routes
-app.use('/api/payments', router);
+app.use('/api', initRoutes); 
+// Payment routes
+app.use('/api/payments', paymentRoutes);
 
-
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start the server
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
