@@ -1,5 +1,4 @@
 import { initiatePayment} from '../services/paymentService.js';
-import { requestCreateOrder, auth } from '../services/paymentService.js';
 
 
 export async function handleInitiatePayment(req, res) {
