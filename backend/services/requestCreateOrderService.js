@@ -24,7 +24,7 @@ export const requestCreateOrder = async (fabricToken, title, amount) => {
 
         const options = {
             method: "POST",
-            url: `${config.baseUrl}/payment/v1/merchant/preOrder`,
+            url: `https://developerportal.ethiotelebirr.et:38443/apiaccess/payment/gateway/payment/v1/merchant/preOrder`,
             headers: {
                 "Content-Type": "application/json",
                 "X-APP-Key": config.fabricAppId,
@@ -55,17 +55,17 @@ const createRequestObject = (title, amount) => {
         version: "1.0",
         biz_content: {
             notify_url: "https://www.google.com",
-            trade_type: "InApp",
+            trade_type: "WebCheckout",
             appid: config.merchantAppId,
             merch_code: config.merchantCode,
             merch_order_id: createMerchantOrderId(),
-            title,
+            title:title,
             total_amount: amount,
             trans_currency: "ETB",
             timeout_express: "120m",
             payee_identifier: config.merchantCode,
             payee_identifier_type: "04",
-            payee_type: "3000",
+            payee_type: "5000",
             redirect_url: "https://www.bing.com",
         },
     };
