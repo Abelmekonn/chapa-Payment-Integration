@@ -10,7 +10,6 @@ export const createOrder = async (req, res) => {
     const fabricToken = applyFabricTokenResult.token;
 
     const createOrderResult = await requestCreateOrder(fabricToken, title, amount);
-    console.log(createOrderResult);
 
     const prepayId = createOrderResult.biz_content.prepay_id;
     const rawRequest = createRawRequest(prepayId);
@@ -72,7 +71,6 @@ const createRequestObject = (title, amount) => {
 
     req.sign = signRequestObject(req);
     req.sign_type = "SHA256WithRSA";
-    console.log(req);
     return req;
 };
 

@@ -46,9 +46,7 @@ export function signRequestObject(requestObject) {
     }
 
     // Sort fields by ASCII
-    fields.sort();
-
-    console.log("fields" ,fields)
+    fields.sort()
 
     // Build the signature string
     const signStrList = fields.map((key) => `${key}=${fieldMap[key]}`);
@@ -86,7 +84,6 @@ export const signString = (text, PRIVATE_KEY) => {
         // Generate signature and convert to Base64
         const sign = jsrsasign.hextob64(sha256withrsa.sign());
 
-        console.log("obj" , sign)
 
         return sign;
     } catch (error) {
