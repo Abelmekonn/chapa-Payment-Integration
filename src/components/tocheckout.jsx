@@ -1,16 +1,27 @@
 import React from "react";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 function Tocheckout({ totalprice }) {
+    const price = totalprice.toString()
     const checkout = async () => {
         await axios
-            .post("http://127.0.0.1:8000/pay", {
-                amount: totalprice,
+            .post("http://localhost:8000/api/payments/createOrder", {
+                amount: price,
+                currency: "ETB",
+                email: "john.doe@example.com",
+                first_name: "John",
+                last_name: "Doe",
+                phone_number: "+251912345678",
+                returnUrl: "http://localhost:5173/",
+                callbackUrl: "http://localhost:5173/",
+                title: "payment",
                 rdurl: "http://localhost:5173",
             })
             .then((res) => {
-                console.log(res);
-                const chekouturl = res?.data?.detail?.data?.checkout_url;
+                console.log(res.data);
+                
+                const chekouturl = res?.data?.checkoutUrl;
                 chekouturl && window.location.replace(chekouturl);
             });
     };
@@ -23,5 +34,8 @@ function Tocheckout({ totalprice }) {
         </div>
     );
 }
+Tocheckout.propTypes = {
+    totalprice: PropTypes.number.isRequired,
+};
 
 export default Tocheckout;

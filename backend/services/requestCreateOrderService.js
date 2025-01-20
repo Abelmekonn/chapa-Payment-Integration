@@ -14,13 +14,14 @@ export const createOrder = async (req, res) => {
     const prepayId = createOrderResult.biz_content.prepay_id;
     const rawRequest = createRawRequest(prepayId);
 
+    console.log("object" , rawRequest)
+
     res.send(rawRequest);
 };
 
 export const requestCreateOrder = async (fabricToken, title, amount) => {
     return new Promise((resolve, reject) => {
         const reqObject = createRequestObject(title, amount);
-
         const options = {
             method: "POST",
             url: `https://developerportal.ethiotelebirr.et:38443/apiaccess/payment/gateway/payment/v1/merchant/preOrder`,
@@ -41,8 +42,12 @@ export const requestCreateOrder = async (fabricToken, title, amount) => {
                 return;
             }
             const result = JSON.parse(response.body);
+
+            
+            
             resolve(result);
         });
+        
     });
 };
 
@@ -65,7 +70,7 @@ const createRequestObject = (title, amount) => {
             payee_identifier: config.merchantCode,
             payee_identifier_type: "04",
             payee_type: "5000",
-            redirect_url: "https://www.bing.com",
+            redirect_url: "http://localhost:5173/",
         },
     };
 
