@@ -12,15 +12,35 @@ const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET_KEY;
  * @param {string} returnUrl - URL to redirect users after payment
  * @returns {Object} - Response containing checkout URL
  */
+
+function generateTxRef() {
+    const timestamp = Date.now();  // Current timestamp
+    const randomString = Math.random().toString(36).substring(2, 10);  // Random string
+    return `${timestamp}-${randomString}`;  // Combine them to form a unique ref
+}
+
 export async function initiatePayment(amount, currency, callbackUrl, returnUrl) {
     try {
+        const tx_ref = generateTxRef();
         const response = await axios.post(
             'https://api.chapa.co/v1/transaction/initialize',
             {
                 amount,
                 currency,
+                email: "abebech_bekele@gmail.com",
+                first_name: "Bilen",
+                last_name: "Gizachew",
+                phone_number: "0912345678",
+                tx_ref,
                 callback_url: callbackUrl,
                 return_url: returnUrl,
+                customization: {
+                    title: "Payment ",
+                    description: "online payments"
+                },
+                meta: {
+                    hide_receipt: "true"
+                }
             },
             {
                 headers: {
