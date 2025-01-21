@@ -2,6 +2,7 @@ import { applyFabricToken } from "./applyFabricTokenService.js";
 import { createTimeStamp, createNonceStr, signRequestObject } from "../utils/tools.js";
 import config from "../config/config.js";
 import request from "request";
+import db from "../db/db.js"
 
 export const createOrder = async (req, res) => {
     const { title, amount } = req.body;
@@ -14,12 +15,19 @@ export const createOrder = async (req, res) => {
     const prepayId = createOrderResult.biz_content.prepay_id;
     const rawRequest = createRawRequest(prepayId);
 
-    console.log("object" , rawRequest)
+    console.log("object", rawRequest)
 
     res.send(rawRequest);
 };
+function generateTxRef() {
+    const timestamp = Date.now();  // Current timestamp
+    const randomString = Math.random().toString(36).substring(2, 10);  // Random string
+    return `${timestamp}-${randomString}`;  // Combine them to form a unique ref
+}
 
-export const requestCreateOrder = async (fabricToken, title, amount) => {
+export const requestCreateOrder = async (fabricToken, title, amount , first_name,last_name,phone_number,email) => {
+    const user_name = first_name + " " + last_name
+    const tx_ref = generateTxRef();
     return new Promise((resolve, reject) => {
         const reqObject = createRequestObject(title, amount);
         const options = {
@@ -43,11 +51,16 @@ export const requestCreateOrder = async (fabricToken, title, amount) => {
             }
             const result = JSON.parse(response.body);
 
-            
-            
+            const insertQuery = `
+        INSERT INTO payments (gateway, tx_ref, amount, currency, status, user_name, phone_number, email)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+            const params = ['Tele Birr', tx_ref, amount, "ETB", 'Pending', user_name, phone_number, email];
+            db.query(insertQuery, params);
+
             resolve(result);
         });
-        
+
     });
 };
 
@@ -63,7 +76,7 @@ const createRequestObject = (title, amount) => {
             appid: config.merchantAppId,
             merch_code: config.merchantCode,
             merch_order_id: createMerchantOrderId(),
-            title:title,
+            title: title,
             total_amount: amount,
             trans_currency: "ETB",
             timeout_express: "120m",

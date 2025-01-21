@@ -2,6 +2,7 @@ import axios from 'axios';
 import process from 'process';
 import request from "request";
 import tools from "../utils/tools.js";
+import db from "../db/db.js"
 
 const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET_KEY;
 
@@ -10,6 +11,11 @@ const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET_KEY;
  * @param {string} currency - Payment currency (e.g., ETB)
  * @param {string} callbackUrl - URL for Chapa to send payment verification
  * @param {string} returnUrl - URL to redirect users after payment
+ * @param {string} phone_number - URL to redirect users after payment
+ * @param {string} first_name - URL to redirect users after payment
+ * @param {string} last_name - URL to redirect users after payment
+ * @param {string} email - URL to redirect users after payment
+ * 
  * @returns {Object} - Response containing checkout URL
  */
 
@@ -19,24 +25,28 @@ function generateTxRef() {
     return `${timestamp}-${randomString}`;  // Combine them to form a unique ref
 }
 
-export async function initiatePayment(amount, currency, callbackUrl, returnUrl) {
+export async function initiatePayment(amount, currency, callbackUrl, returnUrl,last_name, first_name,phone_number ,email) {
     try {
+        
+
+        const user_name = `${first_name} ${last_name}`;
         const tx_ref = generateTxRef();
+        
         const response = await axios.post(
             'https://api.chapa.co/v1/transaction/initialize',
             {
                 amount,
                 currency,
-                email: "abebech_bekele@gmail.com",
-                first_name: "Bilen",
-                last_name: "Gizachew",
-                phone_number: "0912345678",
+                email,
+                first_name,
+                last_name,
+                phone_number: phone_number,  // Send the formatted phone number
                 tx_ref,
                 callback_url: callbackUrl,
                 return_url: returnUrl,
                 customization: {
-                    title: "Payment ",
-                    description: "online payments"
+                    title: "Payment",
+                    description: "Online payments"
                 },
                 meta: {
                     hide_receipt: "true"
@@ -50,6 +60,14 @@ export async function initiatePayment(amount, currency, callbackUrl, returnUrl) 
             }
         );
 
+        // Insert payment record into the database
+        const insertQuery = `
+        INSERT INTO payments (gateway, tx_ref, amount, currency, status, user_name, phone_number, email)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+        const params = ['Chapa', tx_ref, amount, currency, 'Pending', user_name, phone_number, email];
+        await db.query(insertQuery, params);
+
         return {
             success: true,
             checkoutUrl: response.data.data.checkout_url,
@@ -62,7 +80,6 @@ export async function initiatePayment(amount, currency, callbackUrl, returnUrl) 
         };
     }
 }
-
 
 
 export const applyFabricToken = () => {

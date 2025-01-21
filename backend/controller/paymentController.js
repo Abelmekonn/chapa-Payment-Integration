@@ -2,9 +2,9 @@ import { initiatePayment} from '../services/paymentService.js';
 
 
 export async function handleInitiatePayment(req, res) {
-    const { amount, currency, callbackUrl, returnUrl } = req.body;
+    const { amount, currency, callbackUrl, returnUrl,first_name,last_name,phone_number,email } = req.body;
 
-    const result = await initiatePayment(amount, currency, callbackUrl, returnUrl);
+    const result = await initiatePayment(amount, currency, callbackUrl, returnUrl,first_name,last_name,phone_number,email );
 
     if (result.success) {
         return res.json({ checkoutUrl: result.checkoutUrl });
